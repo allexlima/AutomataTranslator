@@ -8,7 +8,7 @@ class Interface():
     def __init__(self):
         # Confiduração da janela principal
         self.app = QApplication(sys.argv)
-        self.width = 800
+        self.width = 790
         self.height = 480
         self.w = QWidget()
         self.w.setWindowTitle("AutomataTranslator")
@@ -36,28 +36,28 @@ class Interface():
         self.txt = QTextEdit(self.w)
         self.txt.setObjectName("text")
         self.txt.setText("Insira JSON aqui")
-        self.txt.setGeometry(30, 40, 300, 360)
+        self.txt.setGeometry(30, 40, 350, 360)
 
         # Segunda caixa de texto(output)
         self.out = QTextEdit(self.w)
         self.out.setReadOnly(True)
         self.out.setStyleSheet("background: #EBEBE4;")
         self.out.setObjectName("output")
-        self.out.setGeometry(470, 40, 300, 360)
+        self.out.setGeometry(410, 40, 350, 360)
 
         # Botão para iniciar a conversão do input
         self.convert_button = QPushButton(self.w)
         self.convert_button.setObjectName("convert")
         self.convert_button.setText("Converter")
         self.convert_button.clicked.connect(self.button_convert)
-        self.convert_button.move(686, 420)
+        self.convert_button.move(self.width - 115, 425)
 
         # Botão para limpar a caixa de texto "input"
         self.clear_button = QPushButton(self.w)
         self.clear_button.setObjectName("clear")
         self.clear_button.setText("Limpar Input")
         self.clear_button.clicked.connect(self.button_clear)
-        self.clear_button.move(576, 420)
+        self.clear_button.move(self.width - 220, 425)
 
         self.w.show()
         sys.exit(self.app.exec_())
