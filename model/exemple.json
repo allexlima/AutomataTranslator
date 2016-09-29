@@ -1,0 +1,36 @@
+{
+	"name": "Test sample name",
+	"type": "AFD",
+	"alphabet": [0 , 1],
+	"base": {
+		"initial": "q0",
+		"final": [
+			"q2",
+			"q3"
+		]
+	},
+	"states": [
+		{
+			"id": "q0",
+			"cases": [
+				{
+					"if": 0,
+					"goto": "q0"
+				},
+				{
+					"if": 1,
+					"goto": "q1"
+				}
+			]
+		},
+		{
+			"id": "q1",
+			"cases": [
+				{
+					"if": 0,
+					"goto": "q2"
+				}
+			]
+		}
+	]
+}

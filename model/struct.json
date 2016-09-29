@@ -1,0 +1,77 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"additionalProperties": false,
+	"title": "AutomataTranslator Struct",
+	"description": "Nondeterministic and Deterministic finite automata representation",
+	"type": "object",
+	"properties": {
+		"name": {
+			"type": "string",
+			"minLength": 8
+		},
+		"type":{
+			"enum": [
+				"AFD",
+				"AFN"
+			]
+		},
+		"alphabet": {
+			"type": "array",
+			"minItems": 1,
+			"uniqueItems": true
+		},
+		"base": {
+			"initial": {
+				"type": "string",
+				"minLength": 1,
+				"maxLength": 3
+			},
+			"final": {
+				"type": "array",
+				"items": {
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 3
+				},
+				"minItems": 1,
+				"uniqueItems": true
+			}
+		},
+		"states": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 3
+					},
+					"cases": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"if": {
+									"minLength": 1
+								},
+								"goto": {
+									"type": "string",
+									"minLength": 1,
+									"maxLength": 3
+								}
+							}
+						}
+					}
+				}
+			},
+			"minItems": 1,
+			"uniqueItems": true
+		}
+	},
+	"required": [
+		"alphabet",
+		"base",
+		"states"
+	]
+}
