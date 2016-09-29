@@ -25,7 +25,7 @@ class Interface():
         self.abrir_arquivo.triggered.connect(self.open_read_file)
         self.salvar_arquivo = QAction("Salvar AFD Gerado", self.w)
         self.salvar_arquivo.triggered.connect(self.save_afd)
-        self.menu_bar.setGeometry(0, 0, self.width, 30)
+        self.menu_bar.adjustSize()
 
         self.menu_opcoes.addAction(self.abrir_arquivo)
         self.menu_opcoes.addAction(self.salvar_arquivo)
