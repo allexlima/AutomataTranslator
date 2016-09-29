@@ -18,14 +18,15 @@ class Interface():
 
         # Configuração da barra de menu
         self.menu_bar = QMenuBar(self.w)
-        self.menu_opcoes = self.menu_bar.addMenu("Opcoes")
+        self.menu_opcoes = self.menu_bar.addMenu(u"Opções")
         self.sair = QAction("Sair", self.w)
         self.sair.triggered.connect(qApp.quit)
         self.abrir_arquivo = QAction("Abrir", self.w)
         self.abrir_arquivo.triggered.connect(self.open_read_file)
         self.salvar_arquivo = QAction("Salvar AFD Gerado", self.w)
         self.salvar_arquivo.triggered.connect(self.save_afd)
-        self.menu_bar.adjustSize()
+        #self.menu_bar.setStyleSheet("width: 100%; background: black;")
+        self.menu_bar.setFixedWidth(self.width)
 
         self.menu_opcoes.addAction(self.abrir_arquivo)
         self.menu_opcoes.addAction(self.salvar_arquivo)
@@ -76,18 +77,21 @@ class Interface():
     def open_read_file(self):
         #fi_le = QFileDialog()
         file_path = QFileDialog().getOpenFileName(self.w, "Open File", "/home", "JSON (*.json)")
-        with open(file_path, 'r') as my_file:
-            data = my_file.read()
 
-        self.txt.setText(data)
+        if file_path:
+            with open(file_path, 'r') as my_file:
+                data = my_file.read()
+            self.txt.setText(data)
+
 
     def save_afd(self):
         afd_content = self.txt.toPlainText()
         save_path = QFileDialog().getSaveFileName(self.w, "Save File", "/home", "JSON (*.json)")
-        print save_path
-        with open(save_path + ".json", "w+") as afd:
-            afd.write(afd_content)
 
+        if save_path:
+            with open(save_path + ".json", "w+") as afd:
+                afd.write(afd_content)
+            print save_path
 
 
 interface = Interface()
