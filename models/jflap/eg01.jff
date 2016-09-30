@@ -1,29 +1,23 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-
-<structure>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--Created with JFLAP 6.4.--><structure>
 	<type>fa</type>
 	<automaton>
 		<!--The list of states.-->
 		<state id="0" name="q0">
-			<x>100</x>
-			<y>100</y>
+			<x>100.0</x>
+			<y>100.0</y>
 			<initial/>
 		</state>
 		<state id="1" name="q1">
-			<x>200</x>
-			<y>100</y>
+			<x>200.0</x>
+			<y>100.0</y>
+			<label>tesesf</label>
 		</state>
 		<state id="2" name="q2">
-			<x>300</x>
-			<y>100</y>
+			<x>300.0</x>
+			<y>100.0</y>
 			<final/>
 		</state>
 		<!--The list of transitions.-->
-		<transition>
-			<from>1</from>
-			<to>2</to>
-			<read>0</read>
-		</transition>
 		<transition>
 			<from>2</from>
 			<to>2</to>
@@ -38,6 +32,11 @@
 			<from>2</from>
 			<to>2</to>
 			<read>1</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>2</to>
+			<read>0</read>
 		</transition>
 		<transition>
 			<from>0</from>
