@@ -8,6 +8,7 @@ class Interface():
     def __init__(self):
         # Confiduração da janela principal
         self.app = QApplication(sys.argv)
+        self.app.setWindowIcon(QIcon("/models/icon/favicon.ico"))
         self.width = 790
         self.height = 480
         self.w = QWidget()
