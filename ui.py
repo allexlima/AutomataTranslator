@@ -64,6 +64,7 @@ class Interface():
 
     def button_convert(self):
         texto = self.txt.toPlainText()
+        self.show_error("his is the description of the error 0xcc98")
         return texto
 
     def button_clear(self):
@@ -92,6 +93,15 @@ class Interface():
             with open(save_path + ".json", "w+") as afd:
                 afd.write(afd_content)
             print save_path
+
+    def show_error(self, msg):
+        message = QMessageBox(self.w)
+        message.setIcon(2)
+        message.setText(msg)
+        message.setWindowTitle("Erro")
+        message.setWindowModality(Qt.ApplicationModal)
+
+        message.exec_()
 
 
 interface = Interface()
