@@ -1,77 +1,79 @@
 {
 	"$schema": "http://json-schema.org/draft-04/schema#",
 	"additionalProperties": false,
-	"title": "AutomataTranslator Struct",
+	"title": "AutomataTranslator Struct - JFLAP template based by Allex Lima <https://github.com/allexlima>",
 	"description": "Nondeterministic and Deterministic finite automata representation",
 	"type": "object",
 	"properties": {
-		"name": {
-			"type": "string",
-			"minLength": 8
-		},
-		"model":{
-			"enum": [
-				"AFD",
-				"AFN"
-			]
-		},
-		"alphabet": {
-			"type": "array",
-			"minItems": 1,
-			"uniqueItems": true
-		},
-		"base": {
-			"initial": {
-				"type": "string",
-				"minLength": 1,
-				"maxLength": 3
-			},
-			"final": {
-				"type": "array",
-				"items": {
-					"type": "string",
-					"minLength": 1,
-					"maxLength": 3
-				},
-				"minItems": 1,
-				"uniqueItems": true
-			}
-		},
-		"states": {
-			"type": "array",
-			"items": {
-				"type": "object",
-				"properties": {
-					"id": {
-						"type": "string",
-						"minLength": 1,
-						"maxLength": 3
-					},
-					"cases": {
-						"type": "array",
-						"items": {
-							"type": "object",
-							"properties": {
-								"if": {
-									"minLength": 1
-								},
-								"goto": {
-									"type": "string",
-									"minLength": 1,
-									"maxLength": 3
-								}
-							}
+		"structure": {
+			"allOf": [
+				{
+					"properties": {
+						"type": {
+							"enum": [
+								"AFN",
+								"AFD",
+								"fa"
+							]
 						}
-					}
+					},
+					"required": [
+						"type"
+					]
 				}
-			},
-			"minItems": 1,
-			"uniqueItems": true
+			],
+			"automaton": {
+				"state": {
+					"type": "object",
+					"properties": {
+						"id": {
+							"type": "integer"
+						},
+						"name": {
+							"type": "string"
+						},
+						"x": {
+							"type": "integer"
+						},
+						"y": {
+							"type": "integer"
+						},
+						"initial": {
+							"type": ["boolean", "null"]
+						},
+						"final": {
+							"type": ["boolean", "null"]
+						}
+					},
+					"required": [
+						"id",
+						"name"
+					]
+				},
+				"transition": {
+					"type": "object",
+					"properties": {
+						"from": {
+							"type": "integer"
+						},
+						"read": {
+							"type": ["string", "integer", "numeric", "null"]
+						},
+						"to": {
+							"type": "integer"
+						}
+					},
+					"required": [
+						"from",
+						"read",
+						"to"
+					]
+				}
+			}
 		}
 	},
 	"required": [
-		"alphabet",
-		"base",
-		"states"
+		"structure",
+		"/automaton/state/name"
 	]
 }

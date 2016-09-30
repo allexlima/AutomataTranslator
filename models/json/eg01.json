@@ -1,0 +1,24 @@
+{
+	"structure": {
+		"type": "fa",
+		"automaton": {
+			"state": [
+				{
+					"id": 0,
+					"name": "q0",
+					"x": 100,
+					"y": 100,
+					"initial": true,
+					"final": true
+				}
+			],
+			"transition": [
+				{
+					"from": 0,
+					"read": "0",
+					"to": 0
+				}
+			]
+		}
+	}
+}
