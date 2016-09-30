@@ -7,7 +7,7 @@ import jsonschema
 
 class Engine:
     def __init__(self, input):
-        self.model_file = "model/struct.json"
+        self.model_file = "models/json/struct.json"
         self.__afn = input
 
     def read_schema(self):
