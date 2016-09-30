@@ -9,7 +9,7 @@
 			"type": "string",
 			"minLength": 8
 		},
-		"type":{
+		"model":{
 			"enum": [
 				"AFD",
 				"AFN"
