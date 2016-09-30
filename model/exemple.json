@@ -1,7 +1,7 @@
 {
 	"name": "Test sample name",
-	"type": "AFD",
-	"alphabet": [0 , 1],
+	"model": "AFD",
+	"alphabet": [1, 0],
 	"base": {
 		"initial": "q0",
 		"final": [
