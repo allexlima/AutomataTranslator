@@ -1,36 +1,21 @@
 {
-	"name": "Test sample name",
-	"model": "AFD",
-	"alphabet": [1, 0],
-	"base": {
-		"initial": "q0",
-		"final": [
-			"q2",
-			"q3"
-		]
-	},
-	"states": [
-		{
-			"id": "q0",
-			"cases": [
+	"structure": {
+		"type": "fa",
+		"automaton": {
+			"state": [
 				{
-					"if": 0,
-					"goto": "q0"
-				},
-				{
-					"if": 1,
-					"goto": "q1"
+					"id": 0,
+					"name": "q0",
+					"initial": true
 				}
-			]
-		},
-		{
-			"id": "q1",
-			"cases": [
+			],
+			"transition": [
 				{
-					"if": 0,
-					"goto": "q2"
+					"from": 0,
+					"read": "0",
+					"to": 0
 				}
 			]
 		}
-	]
+	}
 }

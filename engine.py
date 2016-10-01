@@ -5,7 +5,6 @@ import json
 import jsonschema
 
 
-
 class Model(object):
     def __init__(self, entry):
         self.model_file = "models/json/struct.json"

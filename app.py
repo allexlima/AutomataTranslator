@@ -14,7 +14,7 @@ if __name__ == "__main__":
     with open("models/jflap/eg01.jff", "r") as fl:
         jf = json.dumps(xmltodict.parse(fl))
 
-    with open("models/json/eg02.json", "w+") as fl:
+    with open("models/json/eg01.json", "w+") as fl:
         fl.write(jf.replace("@", ""))
 
     test = Translator(example)
