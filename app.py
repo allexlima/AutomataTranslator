@@ -1,20 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import json
-import xmltodict
 from engine import Translator
-# from ui import Interface
 
 if __name__ == "__main__":
 
-    with open("models/json/example.json", "r") as fl:
-        example = json.load(fl)
-
     with open("models/jflap/eg01.jff", "r") as fl:
-        jf = json.dumps(xmltodict.parse(fl))
+        # example_jflap = json.loads(json.dumps(xmltodict.parse(fl)))
+        example_jflap = fl.read()
 
-    with open("models/json/eg01.json", "w+") as fl:
-        fl.write(jf.replace("@", ""))
+    with open("models/json/example.json", "r") as fl:
+        # example_json = json.load(fl)
+        example_json = fl.read()
 
-    test = Translator(example)
+    test = Translator(example_json)
+    test.jff2json()
+    test.convert()
+

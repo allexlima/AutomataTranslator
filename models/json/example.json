@@ -4,8 +4,8 @@
 		"automaton": {
 			"state": [
 				{
-					"id": 0,
-					"name": "q0",
+					"@id": 0,
+					"@name": "q0",
 					"initial": true
 				}
 			],

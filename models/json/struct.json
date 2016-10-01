@@ -19,15 +19,15 @@
 							"items": {
 								"type": "object",
 								"properties": {
-									"id": { "type": "integer"},
-									"name": {"type": "string"},
+									"@id": { "type": "integer"},
+									"@name": {"type": "string"},
 									"label": {"type": "string"},
 									"x": {"type": "integer"},
 									"y": {"type": "integer"},
 									"initial": {"type": ["boolean", "null"]},
 									"final": {"type": ["boolean", "null"]}
 								},
-								"required": ["id", "name"]
+								"required": ["@id", "@name"]
 							},
 							"minItems": 1
 						},

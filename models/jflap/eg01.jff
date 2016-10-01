@@ -8,45 +8,25 @@
 			<initial/>
 		</state>
 		<state id="1" name="q1">
-			<x>200.0</x>
-			<y>100.0</y>
-			<label>tesesf</label>
-		</state>
-		<state id="2" name="q2">
-			<x>300.0</x>
-			<y>100.0</y>
+			<x>221.0</x>
+			<y>99.0</y>
 			<final/>
 		</state>
 		<!--The list of transitions.-->
 		<transition>
-			<from>2</from>
-			<to>2</to>
+			<from>0</from>
+			<to>0</to>
 			<read>0</read>
 		</transition>
 		<transition>
 			<from>0</from>
 			<to>0</to>
 			<read>1</read>
-		</transition>
-		<transition>
-			<from>2</from>
-			<to>2</to>
-			<read>1</read>
-		</transition>
-		<transition>
-			<from>1</from>
-			<to>2</to>
-			<read>0</read>
 		</transition>
 		<transition>
 			<from>0</from>
 			<to>1</to>
 			<read>0</read>
-		</transition>
-		<transition>
-			<from>1</from>
-			<to>0</to>
-			<read>1</read>
 		</transition>
 	</automaton>
 </structure>
