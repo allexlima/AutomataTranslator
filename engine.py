@@ -59,8 +59,20 @@ class Jflap(Model):
     def __fix_values_types(self):
         for i in self.states:
             i["@id"] = int(i["@id"])
-            i["x"] = int(float(i["x"]))
-            i["y"] = int(float(i["y"]))
+            i.pop("x")
+            i.pop("y")
+            try:
+                i["initial"] = True if i["initial"] is None else True
+            except KeyError:
+                pass
+            try:
+                i["final"] = True if i["final"] is None else True
+            except KeyError:
+                pass
+            try:
+                i.pop("label")
+            except KeyError:
+                pass
 
         for i in self.transitions:
             i["from"] = int(i["from"])
@@ -90,6 +102,10 @@ class Translator(Jflap):
         self.initial_state = None
         self.final_state = []
 
+    def __get_alphabet(self):
+        alph = [str(item["read"]) for item in self.transitions]
+        return sorted(list(set(alph)))
+
     def __get_az_states(self):
         for i in self.states:
             try:
@@ -106,13 +122,67 @@ class Translator(Jflap):
 
         self.final_state = sorted(self.final_state, key=lambda x: int(x["@id"]))
 
+    def __get_last_state_id(self):
+        return self.states[-1]["@id"]
+
+    def __get_state(self, state_id):
+        for item in self.states:
+            if item["@id"] == state_id:
+                return item
+        return None
+
+    def __get_transitions(self, from_id, reading):
+        return [item["to"] for item in self.transitions if item["from"] == from_id and item["read"] == reading]
+
+    def __is_initial_state(self, state_id):
+            return True if self.initial_state["@id"] is state_id else False
+
+    def __is_final_state(self, states_id):
+        for item in self.final_state:
+            for state in states_id:
+                if item["@id"] == state:
+                    return True
+        return False
+
+    @staticmethod
+    def __set_name_tuple(symbols, n_id=None):
+        name = ""
+        if isinstance(symbols, list):
+            for i in symbols:
+                name += "q"+str(i)
+            return name
+        else:
+            name = "q" + str(n_id)
+        return name
+
+    @staticmethod
+    def __new_transition(from_id, to_id, reading):
+        transition = {}
+        transition.update({u"from": from_id})
+        transition.update({u"to": to_id})
+        transition.update({u"read": reading})
+        return transition
+
+    def __new_state(self, is_initial, is_final, name=None):
+        this_id = self.__get_last_state_id() + 1
+        state = {}
+        state.update({u"@id": this_id})
+        state.update({u"@name": self.__set_name_tuple(name, n_id=this_id)})
+        state.update({u"initial": True}) if is_initial is True else None
+        state.update({u"final": True}) if is_final is True else None
+        self.states.append(state)
+        return this_id
+
     def __create_afd_by_afn(self):
         self.load_base_struct()
         self.__get_az_states()
 
-        print self.states
-        # print self.initial_state
-        # print self.final_state
+        for state in self.states:
+            for symbol in self.__get_alphabet():
+                to_states = self.__get_transitions(state["@id"], symbol)
+                if len(to_states) > 1:
+                    new_state = self.__new_state(False, self.__is_final_state(to_states), name=to_states)
+            print state
 
     def convert(self):
         if isinstance(self.entry, dict) is not True:
@@ -122,5 +192,3 @@ class Translator(Jflap):
             print self.alerts()
         else:
             self.__create_afd_by_afn()
-
-
