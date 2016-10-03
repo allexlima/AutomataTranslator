@@ -103,8 +103,8 @@ class Translator(Jflap):
         self.final_state = []
 
     def __get_alphabet(self):
-        alph = [str(item["read"]) for item in self.transitions]
-        return sorted(list(set(alph)))
+        alphabet = [str(item["read"]) for item in self.transitions]
+        return sorted(list(set(alphabet)))
 
     def __get_az_states(self):
         for i in self.states:
@@ -126,13 +126,22 @@ class Translator(Jflap):
         return self.states[-1]["@id"]
 
     def __get_state(self, state_id):
-        for item in self.states:
-            if item["@id"] == state_id:
-                return item
-        return None
+        return [item for item in self.states if item["@id"] == state_id][0]
 
     def __get_transitions(self, from_id, reading):
         return [item["to"] for item in self.transitions if item["from"] == from_id and item["read"] == reading]
+
+    def __pop_states(self, state_id):
+        if isinstance(state_id, list):
+            self.states = [item for item in self.states if item["@id"] in state_id]
+        else:
+            self.states = [item for item in self.states if item["@id"] is state_id]
+
+    def __pop_transitions(self, to_id, reading):
+        if isinstance(to_id, list):
+            self.transitions = [item for item in self.transitions if item["to"] in to_id and item["read"] != reading]
+        else:
+            self.transitions = [item for item in self.transitions if item["to"] is to_id and item["read"] != reading]
 
     def __is_initial_state(self, state_id):
             return True if self.initial_state["@id"] is state_id else False
@@ -155,13 +164,12 @@ class Translator(Jflap):
             name = "q" + str(n_id)
         return name
 
-    @staticmethod
-    def __new_transition(from_id, to_id, reading):
+    def __new_transition(self, from_id, to_id, reading):
         transition = {}
         transition.update({u"from": from_id})
         transition.update({u"to": to_id})
         transition.update({u"read": reading})
-        return transition
+        self.transitions.append(transition)
 
     def __new_state(self, is_initial, is_final, name=None):
         this_id = self.__get_last_state_id() + 1
@@ -173,16 +181,45 @@ class Translator(Jflap):
         self.states.append(state)
         return this_id
 
+    def __show_automaton(self):
+        for state in self.states:
+            for symbol in self.__get_alphabet():
+                print "q{0}*{1} = {2}".format(state["@id"], symbol, self.__get_transitions(state["@id"], symbol))
+
+    def __new_connection(self, state_id, transitions):
+        for symbol in self.__get_alphabet():
+            '''
+                    for id_s in to_states:
+                        transitions = self.__get_transitions(id_s, symbol)
+                        if transitions == to_states:
+                            new_transitions.append(new_state)
+                        else:
+                            new_transitions += [item for item in transitions]
+
+                    self.__pop_transitions(to_states, symbol)
+
+                    for i in new_transitions:
+                        self.__new_transition(new_state, i, symbol)
+            '''
+            print "q{0}*{1} = {2}".format(state_id, symbol, self.__get_transitions(state_id, symbol))
+
     def __create_afd_by_afn(self):
         self.load_base_struct()
         self.__get_az_states()
 
         for state in self.states:
             for symbol in self.__get_alphabet():
-                to_states = self.__get_transitions(state["@id"], symbol)
-                if len(to_states) > 1:
-                    new_state = self.__new_state(False, self.__is_final_state(to_states), name=to_states)
-            print state
+                transitions = self.__get_transitions(state["@id"], symbol)
+
+                if len(transitions) > 1:
+                    new_state = self.__new_state(False, self.__is_final_state(transitions), name=transitions)
+                    self.__pop_transitions(state["@id"], symbol)
+                    self.__new_transition(state["@id"], new_state, symbol)
+                    self.__new_connection(new_state, transitions)
+                    continue
+
+        print "\n"
+        self.__show_automaton()
 
     def convert(self):
         if isinstance(self.entry, dict) is not True:

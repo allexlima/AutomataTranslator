@@ -6,7 +6,8 @@
 				{
 					"@id": 0,
 					"@name": "q0",
-					"initial": true
+					"initial": true,
+					"final": false
 				}
 			],
 			"transition": [
