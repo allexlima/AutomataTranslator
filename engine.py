@@ -184,24 +184,18 @@ class Translator(Jflap):
     def __show_automaton(self):
         for state in self.states:
             for symbol in self.__get_alphabet():
-                print "q{0}*{1} = {2}".format(state["@id"], symbol, self.__get_transitions(state["@id"], symbol))
+                print "q{0} * {1} → {2}".format(state["@id"], symbol, ['q'+str(i) for i in self.__get_transitions(state["@id"], symbol)]).replace("u'", "'").replace("['", "").replace("']", "").replace("'", "").replace("'", "").replace("[]", "λ")
 
-    def __new_connection(self, state_id, transitions):
+    def __new_connection(self, new_state, transitions):
         for symbol in self.__get_alphabet():
-            '''
-                    for id_s in to_states:
-                        transitions = self.__get_transitions(id_s, symbol)
-                        if transitions == to_states:
-                            new_transitions.append(new_state)
-                        else:
-                            new_transitions += [item for item in transitions]
+            arr = []
+            for state in transitions:
+                arr += [item for item in self.__get_transitions(state, symbol)]
 
-                    self.__pop_transitions(to_states, symbol)
-
-                    for i in new_transitions:
-                        self.__new_transition(new_state, i, symbol)
-            '''
-            print "q{0}*{1} = {2}".format(state_id, symbol, self.__get_transitions(state_id, symbol))
+            arr = [new_state] if transitions == arr else list(set(arr))
+            for i in arr:
+                self.__new_transition(new_state, i, symbol)
+                print arr
 
     def __create_afd_by_afn(self):
         self.load_base_struct()
@@ -213,12 +207,10 @@ class Translator(Jflap):
 
                 if len(transitions) > 1:
                     new_state = self.__new_state(False, self.__is_final_state(transitions), name=transitions)
-                    self.__pop_transitions(state["@id"], symbol)
-                    self.__new_transition(state["@id"], new_state, symbol)
+                    # self.__pop_transitions(state["@id"], symbol)
+                    # self.__new_transition(state["@id"], new_state, symbol)
                     self.__new_connection(new_state, transitions)
-                    continue
 
-        print "\n"
         self.__show_automaton()
 
     def convert(self):

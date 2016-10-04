@@ -5,7 +5,7 @@ from engine import Translator
 
 if __name__ == "__main__":
 
-    with open("models/jflap/eg01.jff", "r") as fl:
+    with open("models/jflap/eg02.jff", "r") as fl:
         example_jflap = fl.read()
 
     with open("models/json/example.json", "r") as fl:
