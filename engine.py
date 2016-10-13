@@ -107,6 +107,7 @@ class Translator(Jflap):
         self.entry = entry
         self.initial_state = None
         self.final_state = []
+        self.new_transitions = []
 
     def __get_alphabet(self):
         alphabet = [str(item["read"]) for item in self.transitions]
@@ -135,18 +136,15 @@ class Translator(Jflap):
         return [item for item in self.states if item["@id"] == state_id][0]
 
     def __get_transitions(self, from_id, reading):
+        return [item["to"] for item in self.new_transitions if item["from"] == from_id and item["read"] == reading]
+
+    def __get_transitions_afn(self, from_id, reading):
         return [item["to"] for item in self.transitions if item["from"] == from_id and item["read"] == reading]
 
-    def __pop_states(self, state_id):
-        if isinstance(state_id, list):
-            self.states = [item for item in self.states if item["@id"] in state_id]
-        else:
-            self.states = [item for item in self.states if item["@id"] is state_id]
-
-    def __pop_transitions(self, state_id, reading):
-        state_transitions = [item for item in self.transitions if item["from"] == state_id and item["read"] == reading]
+    def __pop_transition_from(self, state_id, reading):
+        state_transitions = [item for item in self.new_transitions if item["from"] == state_id and item["read"] == reading]
         for i in state_transitions:
-            self.transitions.remove(i)
+            self.new_transitions.remove(i)
 
     def __is_initial_state(self, state_id):
             return True if self.initial_state["@id"] is state_id else False
@@ -174,7 +172,7 @@ class Translator(Jflap):
         transition.update({u"from": from_id})
         transition.update({u"to": to_id})
         transition.update({u"read": reading})
-        self.transitions.append(transition)
+        self.new_transitions.append(transition)
 
     def __new_state(self, is_initial, is_final, name=None):
         this_id = self.__get_last_state_id() + 1
@@ -186,18 +184,11 @@ class Translator(Jflap):
         self.states.append(state)
         return this_id
 
-    def show_automaton(self):
-        output = "\n"
-        for state in self.states:
-            for symbol in self.__get_alphabet():
-                output += "q{0} * {1} → {2}\n".format(state["@id"], symbol, ['q'+str(i) for i in self.__get_transitions(state["@id"], symbol)]).replace("u'", "'").replace("['", "").replace("']", "").replace("'", "").replace("'", "").replace("[]", "λ")
-        return output
-
-    def __get_new_transitions(self, transitions, symbol, new_state):
+    def __get_transitions_union(self, transitions, symbol, new_state):
         new_state_transitions = []
         for i in transitions:
-            new_state_transitions.append(self.__get_transitions(i, symbol))
-        new_state_transitions = [item for sublist in new_state_transitions for item in sublist]
+            new_state_transitions.append(self.__get_transitions_afn(i, symbol))
+        new_state_transitions = list(set([item for sublist in new_state_transitions for item in sublist]))
         if new_state_transitions == transitions:
             return [new_state]
         else:
@@ -206,18 +197,49 @@ class Translator(Jflap):
     def __create_afd_by_afn(self):
         self.load_base_struct()
         self.__get_az_states()
+        self.new_transitions += self.transitions
+        old = {}
 
         for state in self.states:
             for symbol in self.__get_alphabet():
-                actual_transitions = self.__get_transitions(state["@id"], symbol)
+                actual_transitions = list(set(self.__get_transitions(state["@id"], symbol)))
+                actual_transitions_afn = list(set(self.__get_transitions_afn(state["@id"], symbol)))
                 if len(actual_transitions) > 1:
-                    new_state = self.__new_state(False, self.__is_final_state(actual_transitions), name=actual_transitions)
-                    new_transitions = self.__get_new_transitions(actual_transitions, symbol, new_state)
+
+                    new_state = self.__new_state(
+                        False,
+                        self.__is_final_state(actual_transitions_afn),
+                        name=actual_transitions_afn
+                    )
+
+                    old.update({
+                        str(actual_transitions): new_state
+                    })
+
+                    self.__pop_transition_from(state["@id"], symbol)
+                    self.__new_transition(state["@id"], new_state, symbol)
 
                     for symbol_b in self.__get_alphabet():
+                        new_transitions = self.__get_transitions_union(actual_transitions, symbol_b, new_state)
+
                         if symbol_b == symbol:
                             for node in new_transitions:
                                 self.__new_transition(new_state, node, symbol)
+                        else:
+                            for node in new_transitions:
+                                if len(new_transitions) > 1:
+                                    try:
+                                        self.__new_transition(new_state, old[str(new_transitions)], symbol_b)
+                                    except KeyError as error:
+                                        self.create_alert(
+                                            "Erro ao adicionar novas transições! \n\n" +
+                                            json.dumps(old, sort_keys=True, indent=4, separators=(',', ': ')) +
+                                            "\n\nnew_transitions=" + str(new_transitions) +
+                                            "\n\nKeyError not found: " + error.message
+                                        )
+                                    break
+                                else:
+                                    self.__new_transition(new_state, node, symbol_b)
 
     def convert(self):
         if isinstance(self.entry, dict) is not True:
@@ -228,3 +250,10 @@ class Translator(Jflap):
 
         if self.check_syntax(self.entry):
             self.__create_afd_by_afn()
+
+    def show_automaton(self):
+        output = "\n"
+        for state in self.states:
+            for symbol in self.__get_alphabet():
+                output += "q{0} * {1} → {2}\n".format(state["@id"], symbol, ['q'+str(i) for i in self.__get_transitions(state["@id"], symbol)]).replace("u'", "'").replace("['", "").replace("']", "").replace("'", "").replace("'", "").replace("[]", "λ")
+        return output
