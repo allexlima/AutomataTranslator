@@ -95,7 +95,7 @@ class Jflap(Model):
             pass
         return content
 
-    def prepare_layout_jff(self, content):
+    def make_jff(self, content):
         temp = json.loads(content)
         temp = self.prepare_layout_jff(temp)
         return xmltodict.unparse(temp, pretty=True)
@@ -143,11 +143,10 @@ class Translator(Jflap):
         else:
             self.states = [item for item in self.states if item["@id"] is state_id]
 
-    def __pop_transitions(self, to_id, reading):
-        if isinstance(to_id, list):
-            self.transitions = [item for item in self.transitions if item["to"] in to_id and item["read"] != reading]
-        else:
-            self.transitions = [item for item in self.transitions if item["to"] is to_id and item["read"] != reading]
+    def __pop_transitions(self, state_id, reading):
+        state_transitions = [item for item in self.transitions if item["from"] == state_id and item["read"] == reading]
+        for i in state_transitions:
+            self.transitions.remove(i)
 
     def __is_initial_state(self, state_id):
             return True if self.initial_state["@id"] is state_id else False
@@ -194,16 +193,15 @@ class Translator(Jflap):
                 output += "q{0} * {1} → {2}\n".format(state["@id"], symbol, ['q'+str(i) for i in self.__get_transitions(state["@id"], symbol)]).replace("u'", "'").replace("['", "").replace("']", "").replace("'", "").replace("'", "").replace("[]", "λ")
         return output
 
-    def __new_connection(self, new_state, transitions):
-        for symbol in self.__get_alphabet():
-            arr = []
-            for state in transitions:
-                arr += [item for item in self.__get_transitions(state, symbol)]
-
-            arr = [new_state] if transitions == arr else list(set(arr))
-            for i in arr:
-                self.__new_transition(new_state, i, symbol)
-                print arr
+    def __get_new_transitions(self, transitions, symbol, new_state):
+        new_state_transitions = []
+        for i in transitions:
+            new_state_transitions.append(self.__get_transitions(i, symbol))
+        new_state_transitions = [item for sublist in new_state_transitions for item in sublist]
+        if new_state_transitions == transitions:
+            return [new_state]
+        else:
+            return new_state_transitions
 
     def __create_afd_by_afn(self):
         self.load_base_struct()
@@ -211,12 +209,15 @@ class Translator(Jflap):
 
         for state in self.states:
             for symbol in self.__get_alphabet():
-                transitions = self.__get_transitions(state["@id"], symbol)
-                if len(transitions) > 1:
-                    new_state = self.__new_state(False, self.__is_final_state(transitions), name=transitions)
-                    # self.__pop_transitions(state["@id"], symbol)
-                    # self.__new_transition(state["@id"], new_state, symbol)
-                    self.__new_connection(new_state, transitions)
+                actual_transitions = self.__get_transitions(state["@id"], symbol)
+                if len(actual_transitions) > 1:
+                    new_state = self.__new_state(False, self.__is_final_state(actual_transitions), name=actual_transitions)
+                    new_transitions = self.__get_new_transitions(actual_transitions, symbol, new_state)
+
+                    for symbol_b in self.__get_alphabet():
+                        if symbol_b == symbol:
+                            for node in new_transitions:
+                                self.__new_transition(new_state, node, symbol)
 
     def convert(self):
         if isinstance(self.entry, dict) is not True:
