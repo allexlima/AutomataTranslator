@@ -110,23 +110,23 @@ class Interface(QtGui.QWidget):
             new_file.write(content)
 
     def __open_json(self):
-        file_path = QtGui.QFileDialog().getOpenFileName(self, "Abrir Arquivo", ".", "JSON (*.json)")
+        file_path = QtGui.QFileDialog().getOpenFileName(self, "Abrir Arquivo", "models/json", "JSON (*.json)")
         if file_path:
             self.__open(file_path)
 
     def __open_jflap(self):
-        file_path = QtGui.QFileDialog().getOpenFileName(self, "Importar arquivo JFLAP", ".", "JFLAP (*.jff)")
+        file_path = QtGui.QFileDialog().getOpenFileName(self, "Importar arquivo JFLAP", "models/jflap", "JFLAP (*.jff)")
         if file_path:
             self.__open(file_path)
             self.is_jflap = True
 
     def __save_json(self):
-        path = QtGui.QFileDialog().getSaveFileName(self, "Salvar Input", ".", "JSON (*.json)")
+        path = QtGui.QFileDialog().getSaveFileName(self, "Salvar Input", "models/json", "JSON (*.json)")
         if path:
             self.__save(path, self.get_input(), ".json")
 
     def __save_jflap(self):
-        path = QtGui.QFileDialog().getSaveFileName(self, "Exportar Output para formato JFLAP", ".", "JFLAP (*.jff)")
+        path = QtGui.QFileDialog().getSaveFileName(self, "Exportar Output para formato JFLAP", "models/jflap", "JFLAP (*.jff)")
         if path and self.get_output():
             data = self.engine.make_jff(self.get_output())
             self.__save(path, data, ".jff")
