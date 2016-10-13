@@ -86,13 +86,19 @@ class Jflap(Model):
             self.sort_object()
         except xml.parsers.expat.ExpatError as error:
             self.create_alert("Impossível realizar conversão do arquivo .jff!\n" + error.message)
-            print self.alerts()
 
-    def make_jff(self):
-        if self.check_syntax(self.output) is not True:
-            print self.alerts()
-        else:
-            xmltodict.unparse(self.output, pretty=True)
+    def prepare_layout_jff(self, content):
+        try:
+            if not content["type"]:
+                content.update({u"type": u"fa"})
+        except KeyError:
+            pass
+        return content
+
+    def prepare_layout_jff(self, content):
+        temp = json.loads(content)
+        temp = self.prepare_layout_jff(temp)
+        return xmltodict.unparse(temp, pretty=True)
 
 
 class Translator(Jflap):
@@ -181,10 +187,12 @@ class Translator(Jflap):
         self.states.append(state)
         return this_id
 
-    def __show_automaton(self):
+    def show_automaton(self):
+        output = "\n"
         for state in self.states:
             for symbol in self.__get_alphabet():
-                print "q{0} * {1} → {2}".format(state["@id"], symbol, ['q'+str(i) for i in self.__get_transitions(state["@id"], symbol)]).replace("u'", "'").replace("['", "").replace("']", "").replace("'", "").replace("'", "").replace("[]", "λ")
+                output += "q{0} * {1} → {2}\n".format(state["@id"], symbol, ['q'+str(i) for i in self.__get_transitions(state["@id"], symbol)]).replace("u'", "'").replace("['", "").replace("']", "").replace("'", "").replace("'", "").replace("[]", "λ")
+        return output
 
     def __new_connection(self, new_state, transitions):
         for symbol in self.__get_alphabet():
@@ -204,20 +212,18 @@ class Translator(Jflap):
         for state in self.states:
             for symbol in self.__get_alphabet():
                 transitions = self.__get_transitions(state["@id"], symbol)
-
                 if len(transitions) > 1:
                     new_state = self.__new_state(False, self.__is_final_state(transitions), name=transitions)
                     # self.__pop_transitions(state["@id"], symbol)
                     # self.__new_transition(state["@id"], new_state, symbol)
                     self.__new_connection(new_state, transitions)
 
-        self.__show_automaton()
-
     def convert(self):
         if isinstance(self.entry, dict) is not True:
-            self.entry = json.loads(self.entry)
+            try:
+                self.entry = json.loads(self.entry)
+            except ValueError as error:
+                self.create_alert(error)
 
-        if self.check_syntax(self.entry) is not True:
-            print self.alerts()
-        else:
+        if self.check_syntax(self.entry):
             self.__create_afd_by_afn()
