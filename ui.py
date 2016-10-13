@@ -193,7 +193,3 @@ class Interface(QtGui.QWidget):
     @staticmethod
     def wiki():
         webbrowser.open("https://github.com/allexlima/AutomataTranslator/wiki")
-
-
-
-
