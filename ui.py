@@ -91,9 +91,9 @@ class Interface(QtGui.QWidget):
 
         clear_button = QtGui.QPushButton(self)
         clear_button.setObjectName("clear")
-        clear_button.setText("Limpar Input")
+        clear_button.setText("Novo/Limpar")
         clear_button.clicked.connect(self.clear_input)
-        clear_button.move(self.width - 220, 425)
+        clear_button.move(self.width - 225, 425)
 
     def __center_widget(self):
         resolution = QtGui.QDesktopWidget().screenGeometry()
@@ -139,6 +139,7 @@ class Interface(QtGui.QWidget):
 
     def clear_input(self):
         self.set_input("")
+        self.clear_output()
         self.is_jflap = False
 
     def get_output(self):
@@ -148,7 +149,7 @@ class Interface(QtGui.QWidget):
         self.__field_output.setText(text)
 
     def clear_output(self):
-        self.__field_output("")
+        self.set_output("")
 
     def alert(self, text, title="Alert", code=2):
         message = QtGui.QMessageBox(self)
@@ -167,7 +168,8 @@ class Interface(QtGui.QWidget):
             if self.engine.alerts() is not None:
                 self.alert(self.engine.alerts(), title=u"Erro ao traduzir autômato", code=3)
             else:
-                self.set_output(self.get_input())
+                from json import dumps
+                self.set_output(dumps(self.engine.entry, sort_keys=True, indent=4, separators=(',', ': ')))
                 self.alert("Processo de tradução finalizado", title=u"Tradução realizada com sucesso!", code=1)
         else:
             self.alert(u"Escreva, abra ou importe algum autômato não determinístico para começar",

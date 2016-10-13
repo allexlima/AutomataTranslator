@@ -18,7 +18,7 @@ if __name__ == "__main__":
     # -- Espaço para testes
 
     ui.alert(u"Aplicação em modo de testes! \nIniciando...", code=1)
-    ui.set_input("Teste")
+    # ui.set_input("Teste")
 
     # --
 
