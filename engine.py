@@ -198,7 +198,7 @@ class Translator(Jflap):
         self.load_base_struct()
         self.__get_az_states()
         self.new_transitions += self.transitions
-        old = {}
+        states_dict = {}
 
         for state in self.states:
             for symbol in self.__get_alphabet():
@@ -212,34 +212,17 @@ class Translator(Jflap):
                         name=actual_transitions_afn
                     )
 
-                    old.update({
+                    states_dict.update({
                         str(actual_transitions): new_state
                     })
 
                     self.__pop_transition_from(state["@id"], symbol)
                     self.__new_transition(state["@id"], new_state, symbol)
 
-                    for symbol_b in self.__get_alphabet():
-                        new_transitions = self.__get_transitions_union(actual_transitions, symbol_b, new_state)
-
-                        if symbol_b == symbol:
-                            for node in new_transitions:
-                                self.__new_transition(new_state, node, symbol)
-                        else:
-                            for node in new_transitions:
-                                if len(new_transitions) > 1:
-                                    try:
-                                        self.__new_transition(new_state, old[str(new_transitions)], symbol_b)
-                                    except KeyError as error:
-                                        self.create_alert(
-                                            "Erro ao adicionar novas transições! \n\n" +
-                                            json.dumps(old, sort_keys=True, indent=4, separators=(',', ': ')) +
-                                            "\n\nnew_transitions=" + str(new_transitions) +
-                                            "\n\nKeyError not found: " + error.message
-                                        )
-                                    break
-                                else:
-                                    self.__new_transition(new_state, node, symbol_b)
+                    for symb in self.__get_alphabet():
+                        for node in self.__get_transitions_union(actual_transitions, symb, new_state):
+                            self.__new_transition(new_state, node, symb)
+                            print self.show_automaton()
 
     def convert(self):
         if isinstance(self.entry, dict) is not True:

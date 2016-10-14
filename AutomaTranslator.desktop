@@ -1,0 +1,10 @@
+[Desktop Entry]
+
+Name=AutomataTranslator
+Comment=Automata NDFA to DFA translation program
+Terminal=false
+Categories=Education
+Exec=python /opt/AutomataTranslator/app.py
+Type=Application
+Icon=/opt/AutomataTranslator/models/icon/favicon.ico
+Name[en_US]=AutomaTranslator.desktop

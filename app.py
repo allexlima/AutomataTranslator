@@ -1,26 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
-from PyQt4.QtGui import QApplication
-# from engine import Translator
-from ui import Interface
-
+from engine import Translator
 
 if __name__ == "__main__":
-    reload(sys)
-    sys.setdefaultencoding('utf8')
 
-    app = QApplication(["AutomataTranslator"])
-    ui = Interface()
-    ui.init_ui()
+    with open("models/jflap/eg03.jff", "r") as fl:
+        example_jflap = fl.read()
 
-    # -- Espaço para testes
+    with open("models/json/example.json", "r") as fl:
+        example_json = fl.read()
 
-    ui.alert(u"Aplicação em modo de testes! \nIniciando...", code=1)
-    # ui.set_input("Teste")
-
-    # --
-
-    ui.show()
-    sys.exit(app.exec_())
+    test = Translator(example_jflap)
+    test.jff2json()
+    test.convert()
